@@ -14,7 +14,7 @@ const userSchema = new Schema({
     },
     password:{
         type:String,
-        required:true,
+        required:[true,'password is required'],
         minlength: 6,
         select:false
     },
@@ -26,6 +26,10 @@ const userSchema = new Schema({
     isActive:{
         type:Boolean,
         default:false
+    },
+    profilePic:{
+        type:String,
+        default:""
     }
 },
 {
