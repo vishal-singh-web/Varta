@@ -8,7 +8,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendWelcomeEmail = async (email, username, actionURL,next) => {
   try {
-    const { data, error } = await resend.emails.send({
+    const { _, error } = await resend.emails.send({
       from: `${process.env.EMAIL_NAME} <${process.env.EMAIL_FROM}>`,
       to: [email],
       subject: 'Welcome to Varta!',
@@ -21,7 +21,7 @@ const sendWelcomeEmail = async (email, username, actionURL,next) => {
     }
 
   } catch (err) {
-    next(err);
+    console.error('Error sending email:', err);
   }
 };
 

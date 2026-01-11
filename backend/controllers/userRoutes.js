@@ -18,14 +18,20 @@ const createUser = async (req, res, next) => {
         if (findEmail) {
             return res.status(409).json({
                 success: false,
-                message: "User with this email already exits"
+                message: "User with this email already exist"
             })
         }
         const findUserName = await User.findOne({ username })
         if (findUserName) {
             return res.status(409).json({
                 success: false,
-                message: "User with this username already exits"
+                message: "User with this username already exist"
+            })
+        }
+        if(password<6){
+            return res.status(409).json({
+                success: false,
+                message: "Password must be atleast 6 characters"
             })
         }
         await sendWelcomeEmail(email, username, process.env.actionURL, next);
