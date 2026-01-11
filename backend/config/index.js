@@ -23,7 +23,8 @@ cloudinary.config({
         app.use(express.json({ limit: '10mb' }))
         app.use(express.urlencoded({ extended: true }));
         app.use(cookieParser());
-        app.use(cors({origin: process.env.actionURL,credentials:true,
+        app.use(cors({
+            origin: process.env.actionURL, credentials: true,
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
         }))
 
@@ -31,7 +32,14 @@ cloudinary.config({
         app.use('/api/v1/msg', messageRouter)
 
         app.use((error, req, res, next) => {
-            res.status(500).json({message:error.message});
+            if (res.headersSent) {
+                return next(err);
+            }
+
+            console.error("GLOBAL ERROR:", err);
+            res.status(err.status || 500).json({
+                message: err.message || "Internal Server Error",
+            });
         });
         const PORT = process.env.PORT
         app.use(express.static(path.join(__dirname, '../../frontend/dist')));
