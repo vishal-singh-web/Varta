@@ -11,10 +11,10 @@ function ChatPage() {
   const { activeTab, selectedUser, setSelectedUser } = useChatStore();
 
   return (
-    <div className="w-full h-screen flex items-center justify-center p-0 md:p-4 bg-slate-900 overflow-hidden">
-      <div className="relative w-full max-w-6xl h-full md:h-[90vh] flex">
+    <div className="w-full h-full flex items-center justify-center overflow-hidden">
+      <div className="relative w-full max-w-6xl h-full max-h-[850px] flex items-center justify-center">
         <BorderAnimated>
-          <div className="w-full h-full flex bg-slate-900/50 backdrop-blur-xl md:rounded-xl overflow-hidden">
+          <div className="w-full h-full flex bg-slate-900/40 backdrop-blur-xl md:rounded-xl overflow-hidden">
             
             {/* LEFT SIDE: Sidebar */}
             {/* Logic: Hide on mobile if a user is selected */}

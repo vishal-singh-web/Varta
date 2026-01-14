@@ -23,10 +23,10 @@ function LoginPage() {
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-slate-900 overflow-hidden">
-      <div className="relative w-[95%] max-w-6xl h-[90%] max-h-[850px] flex">
+    <div className="w-full h-full flex items-center justify-center overflow-hidden">
+      <div className="relative w-full max-w-6xl h-full max-h-[850px] flex items-center justify-center">
         <BorderAnimated>
-          <div className="w-full h-full flex flex-col md:flex-row bg-slate-900/50 backdrop-blur-xl rounded-xl overflow-hidden">
+          <div className="w-full h-full flex flex-col md:flex-row bg-slate-900/40 backdrop-blur-xl rounded-xl overflow-hidden">
             
             <div className="md:w-1/2 h-full p-6 md:p-10 flex flex-col items-center md:border-r border-slate-600/30">
               <div className="w-full max-w-sm h-full flex flex-col justify-between py-4">

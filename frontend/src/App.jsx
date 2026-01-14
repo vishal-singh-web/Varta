@@ -14,7 +14,7 @@ function App() {
   },[])
   if(isCheckingAuth) return <Pageloader/>
   return( 
-    <div className='min-h-screen bg-slate-900 relative flex items-center justify-center p-4 overflow-hidden'>
+    <div className='fixed inset-0 h-dvh bg-slate-900 flex items-center justify-center p-4 overflow-hidden'>
       <div className="absolute inset-0 opacity-[0.15] pointer-events-none"style={{
           backgroundImage: `
             linear-gradient(to right, white 1px, transparent 1px),

@@ -14,8 +14,8 @@ function SignUpPage() {
   }
 
   return (
-    <div className='w-full h-screen flex items-center justify-center bg-slate-900 overflow-hidden'>
-      <div className="relative w-[95%] max-w-6xl h-[90%] max-h-[850px] flex">
+    <div className='w-full h-full flex items-center justify-center overflow-hidden'>
+      <div className="relative w-full max-w-6xl h-full max-h-[850px] flex items-center justify-center">
         <BorderAnimated>
           <div className='w-full h-full flex flex-col md:flex-row bg-slate-900/50 backdrop-blur-xl rounded-xl overflow-hidden'>
             
@@ -76,7 +76,7 @@ function SignUpPage() {
                   </button>
                 </form>
 
-                <div className='text-center my-2'>
+                <div className='text-center my-6'>
                   <Link to='/login' className='auth-link'>Already have an account? Login</Link>
                 </div>
               </div>
