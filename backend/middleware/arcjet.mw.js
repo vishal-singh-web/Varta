@@ -16,10 +16,10 @@ async function arcjetProtection(req, res, next) {
         if (decision.results.some(isSpoofedBot)){
             return res.status(403).json({ success: false, message: "Malicious spoof bot activity detected." })
         }
-        next()
+        return next()
     } catch (error) {
-        console.json({ success: false, message: "Arcjet Protection Error." })
-        next()
+        console.log({ success: false, message: "Arcjet Protection Error." })
+        return next()
     }
 }
 

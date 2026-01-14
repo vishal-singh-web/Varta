@@ -1,7 +1,9 @@
 import { create } from "zustand";
 import { toast } from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
+import { useAuthStore } from "./useAuthStore";
 
+const notificationSound = new Audio('/sounds/notification.mp3');
 export const useChatStore = create((set, get) => ({
   SearchedContacts: [],
   chats: [],
@@ -21,16 +23,19 @@ export const useChatStore = create((set, get) => ({
   setActiveTab: (tab) => set({ activeTab: tab }),
 
   setSelectedUser: (user) => {
-  const currentSelected = get().selectedUser;
-  
-  // ONLY reset messages if it's a DIFFERENT user
-  if (currentSelected?._id !== user._id) {
-    set({ selectedUser: user, messages: [] });
-  } else {
-    // If it's the same user, just keep everything as is
-    set({ selectedUser: user });
-  }
-},
+    if (user == null) {
+      return set({ selectedUser: null });
+    }
+    const currentSelected = get().selectedUser;
+
+    // ONLY reset messages if it's a DIFFERENT user
+    if (currentSelected?._id !== user._id) {
+      set({ selectedUser: user, messages: [] });
+    } else {
+      // If it's the same user, just keep everything as is
+      set({ selectedUser: user });
+    }
+  },
 
   getSearchedContacts: async (str) => {
     set({ isUsersLoading: true });
@@ -57,25 +62,42 @@ export const useChatStore = create((set, get) => ({
   },
 
   getMessagesByUserId: async (userId) => {
-  // Do NOT do set({ messages: [] }) here
-  set({ isMessagesLoading: true });
-  try {
-    const res = await axiosInstance.get(`v1/msg/chats/${userId}`);
-    const fetchedData = res.data?.data || res.data;
-    set({ messages: Array.isArray(fetchedData) ? fetchedData : [] });
-  } finally {
-    set({ isMessagesLoading: false });
-  }
-},
-  sendMessage:async(data)=>{
-    const {selectedUser,messages} = get();
+    // Do NOT do set({ messages: [] }) here
+    set({ isMessagesLoading: true });
     try {
-      const res = await axiosInstance.post(`/v1/msg/send/${selectedUser._id}`,data);
-      set({messages:[...messages,res.data.data]});
-    } catch (error) {
-       toast.error("Failed to send message");
+      const res = await axiosInstance.get(`v1/msg/chats/${userId}`);
+      const fetchedData = res.data?.data || res.data;
+      set({ messages: Array.isArray(fetchedData) ? fetchedData : [] });
+    } finally {
+      set({ isMessagesLoading: false });
     }
   },
-  subscribeToMessages: async () => { },
-  unsubscribeFromMessages: async () => { }
+  sendMessage: async (data) => {
+    const { selectedUser, messages } = get();
+    try {
+      const res = await axiosInstance.post(`/v1/msg/send/${selectedUser._id}`, data);
+      set({ messages: [...messages, res.data.data] });
+    } catch (error) {
+      toast.error("Failed to send message");
+    }
+  },
+  subscribeToMessages: async () => {
+    const {selectedUser, isSoundEnabled} = get();
+    if(!selectedUser) return;
+    const socket = useAuthStore.getState().socket;
+    socket.on("newMessage",(newMessage)=>{
+      const isMsgSentFromSelectedUser = newMessage.senderId ===selectedUser._id;
+      if(!isMsgSentFromSelectedUser) return;
+      const currentMsgs = get().messages;
+      set({messages:[...currentMsgs,newMessage]});
+
+      if(isSoundEnabled){
+        notificationSound.play().catch((e)=>console.log("Audio not supported:",e));
+      }
+    })
+   },
+  unsubscribeFromMessages: async () => {
+    const socket = useAuthStore.getState().socket;
+    socket.off("newMessage");
+   }
 }));

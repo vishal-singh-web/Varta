@@ -14,10 +14,12 @@ function LoginPage() {
 }
   const handleSubmit = (e) => {
     e.preventDefault();
+    let dataToSend = {...formData};
     if(!isEmail(formData.email)){
-      setFormData({...formData,username:formData.email,email:""})
+      dataToSend = {...dataToSend,username:formData.email,email:""}
     }
-    login(formData);
+    setFormData(dataToSend);
+    login(dataToSend);
   };
 
   return (

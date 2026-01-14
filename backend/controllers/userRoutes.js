@@ -53,45 +53,58 @@ const createUser = async (req, res, next) => {
 }
 
 async function login(req, res, next) {
-    const { username, email, password, role } = req.body;
+    const { username, email, password } = req.body;
+    console.log(username, email);
     try {
-        if ((!username && !email) || !password) {
-            const error = new Error("All fields are required")
-            error.statusCode = 400;
-            return next(error)
-        }
-        let findUser = null;
-        if (username) {
-            findUser = await User.findOne({ username }).select("+password");
-            if (!findUser) {
-                const error = new Error("Invalid Credentials")
-                error.statusCode = 400;
-                return next(error)
-            }
+        // Use trimmed values to prevent space-only inputs
+        const identifier = username?.trim();
+        const userEmail = email?.trim();
 
+        if (!identifier && !userEmail) {
+            const error = new Error("Username or Email is required");
+            error.statusCode = 400;
+            return next(error);
         }
-        else if (email) {
-            findUser = await User.findOne({ email }).select("+password");
-            if (!findUser) {
-                const error = new Error("Invalid Credentails")
-                error.statusCode = 400;
-                return next(error)
-            }
+
+        let findUser = null;
+
+        // Check for Username first (if provided and not empty)
+        if (identifier && identifier!='') {
+            findUser = await User.findOne({ username: identifier }).select("+password");
+        } 
+        // If no username provided, check Email
+        else if (userEmail && userEmail!='') {
+            findUser = await User.findOne({ email: userEmail }).select("+password");
         }
+
+        // Single check for findUser
+        if (!findUser) {
+            const error = new Error("Invalid Credentials");
+            error.statusCode = 400;
+            return next(error);
+        }
+
         const checkPass = await compare(password, findUser.password);
         if (!checkPass) {
-            error = new Error("Invalid Credentails")
+            const error = new Error("Invalid Credentials"); // Fixed: added 'const'
             error.statusCode = 400;
-            return next(error)
+            return next(error);
         }
+
         await generateToken(findUser._id, res);
-        res.status(200).json({
+
+        return res.status(200).json({
             success: true,
             message: "User login successfully",
-            data:{"email":findUser.email,"username":findUser.username,"profilePic":findUser.profilePic}
-        })
+            data: { 
+                email: findUser.email, 
+                username: findUser.username, 
+                profilePic: findUser.profilePic,
+                _id: findUser._id // Good to return this for the frontend store
+            }
+        });
     } catch (error) {
-        next(error)
+        next(error);
     }
 }
 function logout(req, res, next) {

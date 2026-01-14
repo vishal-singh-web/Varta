@@ -7,8 +7,9 @@ const cookieParser = require('cookie-parser');
 const cloudinary = require('cloudinary').v2;
 require('dotenv').config()
 const cors = require('cors');
+const { app,server } = require('../lib/socket');
 
-const app = express();
+
 const dev = process.env.NODE_ENV !== 'production';
 cloudinary.config({
     secure: process.env.NODE_ENV === 'production', cloud_name: process.env.CLOUD_NAME,
@@ -31,14 +32,14 @@ cloudinary.config({
         app.use('/api/v1/auth', userRouter)
         app.use('/api/v1/msg', messageRouter)
 
-        app.use((error, req, res, next) => {
+        app.use((err, req, res, next) => {
             if (res.headersSent) {
                 return next(err);
             }
 
             console.error("GLOBAL ERROR:", err);
             res.status(err.status || 500).json({
-                message: err.message || "Internal Server Error",
+                message: err.message,
             });
         });
         const PORT = process.env.PORT
@@ -49,7 +50,7 @@ cloudinary.config({
                 path.join(__dirname, '../../frontend/dist/index.html')
             );
         });
-        app.listen(PORT || 3000, () => {
+        server.listen(PORT || 3000, () => {
             console.log(`Listening at port ${PORT || 3000}`)
         });
     } catch (error) {

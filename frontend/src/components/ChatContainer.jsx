@@ -7,7 +7,7 @@ import MessagesLoadingSkeleton from "./MessagesLoadingSkeleton";
 import NoChatHistoryPlaceholder from "./NoChatHistoryPlaceholder";
 
 function ChatContainer() {
-  const { selectedUser, getMessagesByUserId, messages, isMessagesLoading } = useChatStore();
+  const { selectedUser, getMessagesByUserId, messages, isMessagesLoading,subscribeToMessages,unsubscribeFromMessages } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 
@@ -16,7 +16,10 @@ function ChatContainer() {
     if (selectedUser?._id) {
       getMessagesByUserId(selectedUser._id);
     }
-  }, [selectedUser?._id, getMessagesByUserId]);
+    subscribeToMessages();
+
+    return ()=> unsubscribeFromMessages();
+  }, [selectedUser?._id, getMessagesByUserId,subscribeToMessages,unsubscribeFromMessages]);
 
   const scrollToBottom = () => {
     if (messageEndRef.current) {

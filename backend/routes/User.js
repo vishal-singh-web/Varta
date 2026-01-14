@@ -8,7 +8,7 @@ Router.use(arcjetProtection)
 
 Router.post('/register', createUser);
 Router.post('/login', login);
-Router.post('/logout', logout);
+Router.get('/logout', logout);
 
 Router.put('/update-profile',protectRoute,updateProfile)
 Router.get('/checkUser',protectRoute,(req,res)=>res.status(200).json({success:true,message:"User is authenticated",data:req.user}))

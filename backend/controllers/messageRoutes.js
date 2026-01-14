@@ -1,5 +1,6 @@
 const Users = require("../models/Users");
 const Messages = require("../models/Messages");
+const { getRecieverSocketId, io } = require("../lib/socket");
 const cloudinary = require('cloudinary').v2;
 
 async function searchUser(req, res, next) {
@@ -50,14 +51,18 @@ async function sendMessage(req,res,next){
             const uploadRes = await cloudinary.uploader.upload(image);
             imageURL = uploadRes.secure_url;
         }
-        const newMsg = await Messages.create({
+        const newMsg = new Messages({
             senderId,
             receiverId,
             text,
             image:imageURL
         })
-
+        await newMsg.save();
         //todo: send msg in real-time if user is online -socker.io
+        const recieverSocketId = getRecieverSocketId(receiverId);
+        if(recieverSocketId){
+            io.to(recieverSocketId).emit("newMessage",newMsg)
+        }
         res.status(200).json({success:true,message:"Message sent.",data:newMsg})
     } catch (error) {
         next(error)
