@@ -112,6 +112,16 @@ RESEND_API_KEY=...
 ARCJET_KEY=...
 NODE_ENV=development
 ```
+
+For the Render deployment, add `MONGODB_URI` to the service's environment variables.
+The backend will not start until it can connect to MongoDB.
+
+The repository includes a scheduled GitHub Actions workflow that requests
+`/health` every 10 minutes to prevent the Render service from sleeping due to
+inactivity. GitHub Actions scheduled workflows can be delayed occasionally, so
+this is not a substitute for a paid Render instance or a dedicated uptime
+monitor.
+
 #Run the Project
 ```
 # From root (starts both using concurrently/nodemon)
